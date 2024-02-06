@@ -1,0 +1,98 @@
+---
+title: "An Analysis of the lifespan of Indian Prime Ministers"
+author: 
+  - Aryaman Sharma
+thanks: "Code and data are available at: https://github.com/Ary4m3n/lifespan-indian-pms.git"
+date: today
+date-format: long
+format: pdf
+toc: true
+number-sections: true
+bibliography: references.bib
+---
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(knitr)
+```
+
+# Introduction {#sec-into}
+
+India got independence in 1947 and since then there have been 14 prime ministers that the country has seen [@citeWikiIndia]. India has seen a majority of civil unrest over the years which have caused Prime Ministers from getting assassinated, namely Indira Gandhi and Rajiv Gandhi. 
+
+This report gives us the opportunity to delve deeper into how these assassinations affect the overall trend of Indian Prime Ministers' lifespans. In this paper, we made use of web scraping to obtain data from the Wikipedia page of a list of Indian Prime Ministers [@citeWikiIndia]. It is essential to note that essential principles of web scraping were followed in this report.
+
+This paper is structured using the following sections: Data, Results, Reflection. In the Data (@sec-data) section, the process of obtaining the data by web scraping and cleaning it is outlined. In the Results (@sec-results) section, the data findings and the plot has been discussed. The paper ends with the Reflection (@sec-reflection) section, where I have reflected on the process of web scraping.
+
+# Data {#sec-data}
+
+As mentioned above, the data analysed in this paper was obtained from web scrapping the Wikipedia page cited above. The data was cleaned and analysed using the open source `R` programming language [@citeR]. R libraries and packages such as `tidyverse` [@citeTidyverse], `janitor` [@citeJanitor], `ggplot2` [@citeGgplot], `knitr` [@citeKnitr], `readr` [@citeReadr], `dplyr` [@citeDplyr], `xml2` [@citeXml2] and `rvest` [@citeRvest]. 
+
+The first step in web scraping was to download the raw html code of the webpage. We only scraped the webpage material once and saved it as `raw_data.csv`. However, the raw data contained the code for the whole page which was unnecessary. We observed that all the data we required was in the html element called `wikitable`. Hence, we focused on the table and cleaned the names and removed unnecessary columns such as portrait, political part, head of state etc. We were specifically interested in the column that contained the name of the Prime Minister, along with the year born, year died and constituency in it. We then separated the data in each row of the column selected in order to have just the name, the important years and year born for Prime Minsters who are still alive.
+
+The data was cleaned further to finally obtain a table showing the name of the Prime Minister, the Birth Year, the Death Year and the Age at Death as shown below in @tbl-cleaned which shows the first 6 rows of the data obtained.
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+
+cleaned_data <- read_csv("../data/cleaned_data.csv", show_col_types = FALSE)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-cleaned
+#| tbl-cap: "Cleaned Data showing birth year, death year and lifespan for each Indian Prime Minister"
+#| tbl-cap-location: bottom
+#| warning: false
+
+cleaned_data |>
+  head() |>
+  kable(
+    col.names = c("Prime Minister", "Birth year", "Death year", "Age at death")
+    )
+```
+
+# Results {#sec-results}
+
+A segment plot (@fig-prime-minister-lifespan) was made to visualize the findings reported in @tbl-cleaned.
+
+```{r}
+#| label: fig-prime-minister-lifespan
+#| fig-cap: Lifespan of all Indian Prime Ministers
+#| echo: false
+
+cleaned_data |>
+  mutate(
+    still_alive = if_else(is.na(Died), "Yes", "No"),
+    Died = if_else(is.na(Died), as.integer(2023), Died)
+  ) |>
+  mutate(Name = as_factor(Name)) |>
+  ggplot(
+    aes(x = Born, xend = Died, y = Name, yend = Name, color = still_alive)
+    ) +
+  geom_segment() +
+  labs(
+    x = "Lifespan", y = "Prime Minister", color = "PM is currently alive"
+    ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+As we can see in @fig-prime-minister-lifespan, the plot shows us the lifespans of all Indian Prime Ministers. Visualizing the data obtained helps us to delve deeper into assessing the different outliers in this situation. We can see that Prime Ministers Rajiv Gandhi, Indira Gandhi and Lal Bahadur Shastri are seen to have shorter lifespans when compared to others. This is because of Rajiv Gandhi and Indira Gandhi were assassinated in 1991 and 1984 respectively [@citeWikiIndia]. Similarly, Lal Bahadur Shastri was reported dead in Tashkent, Uzbekistan by heart attach after signing the peace treat to end the 1965 Indo-Pakistan War, but it was claimed by his wife that there was foul play involved wherein he was poisoned [@citeWikiLal]. 
+
+Visualizing the plot (@fig-prime-minister-lifespan) allows us to delve deeper into analyzing such outlier cases and researching about them.
+
+# Reflection {#sec-reflection}
+
+Overall, this paper provided me with an opportunity to try out web scraping hands-on. In this report, cleaning the data took longer than expected as I tried to try different things and play around with it. In general the process of web scraping seemed intuitive after the first try. The main challenge was to only extract the data needed as for that certain html elements had to be chosen. It became a lot of fun when the tables started coming together and felt extremely rewarding after making the plot. 
+
+The next time I do this, I will certainly make it a point to map out what the data on the webpage looks like to make the data cleaning process easier for myself. In general, it was a fun experience making this report. 
+
+# References
