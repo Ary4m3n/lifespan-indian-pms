@@ -17,7 +17,7 @@ The repo has been created in a reproducible way for as to allow users to access 
 The repo has been structured in a way to make it accessible to the user. The repo is structured as:
 
 -   `input/data` contains the data sources used in analysis including the raw data.
--   `input/sketches` contains two sketches for the dataset `dataset.pdf` and the graph `graphs.pdf` as reference to what is to be expected in the paper.
+-   `input/sketches` contains two sketches for the dataset `dataset.pdf` and the graph `graph.pdf` as reference to what is to be expected in the paper.
 -   `outputs/data` contains the cleaned dataset that was constructed.
 -   `outputs/paper` contains the files used to generate the paper, including the Quarto document, `paper.qmd`, the reference bibliography file, `references.bib` as well as the PDF of the paper, `paper.pdf`. 
 -   `scripts` contains the R scripts used to simulate `00-simulate_data.R`, download `01-download_data.R`, clean `02-data_cleaning.R` and test data `03-test_data.R`. Kindly read the prerequisites in the R scripts' preamble to be able to reuse and run the code.
